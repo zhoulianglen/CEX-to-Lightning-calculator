@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC 闪电网络交易所充值提款计算器</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: #f4f4f9;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 90%;
+            max-width: 600px;
+        }
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+        }
+        .tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px 0;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+        }
+        .active, .tab:hover {
+            border-bottom: 3px solid #f7931a; /* Bitcoin yellow */
+            /* color: #f7931a; */
+            font-weight: bold;
+        }
+        .tabcontent {
+            display: none;
+        }
+        .tabcontent.active {
+            display: block;
+        }
+        label {
+            display: block;
+            margin: 10px 0 5px;
+        }
+        input[type="number"], input[type="text"] {
+            width: calc(100% - 42px);
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            width: 100%;
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            background-color: #f7931a; /* Bitcoin yellow */
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #e58300;
+        }
+        button.copy {
+            background-color: #808080;
+            padding: 8px 10px;
+            width: auto;
+            margin-left: 10px;
+        }
+        button.copy:hover {
+            background-color: #666666;
+        }
+        .output {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        .output input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .output-label {
+            font-weight: bold;
+            margin-top: 10px;
+            display: block;
+            color: black; /* Black color for headings */
+        }
+        h1 {
+            text-align: center;
+            color: black; /* Black color for main title */
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>BTC 闪电网络交易所充值提款计算</h1>
+        <div class="tabs">
+            <div class="tab active" onclick="openTab(event, 'Deposit')">充值</div>
+            <div class="tab" onclick="openTab(event, 'Withdraw')">提现</div>
+        </div>
+
+        <div id="Deposit" class="tabcontent active">
+            <label for="depositAmount">充值金额 (sats):</label>
+            <input type="number" id="depositAmount" min="0">
+            <label for="lnFee">闪电网络处理费 (sats):</label>
+            <input type="number" id="lnFee" min="0">
+            <label class="output-label">交易所实际充值金额 (BTC):</label>
+            <div class="output">
+                <input type="text" id="exchangeDeposit" readonly>
+                <button class="copy" onclick="copyToClipboard('exchangeDeposit', false)">复制</button>
+            </div>
+            <label class="output-label">实际到账 Sats:</label>
+            <div class="output">
+                <input type="text" id="actualSats" readonly>
+                <button class="copy" onclick="copyToClipboard('actualSats', true)">复制</button>
+            </div>
+            <button onclick="calculateDeposit()">计算充值金额</button>
+        </div>
+
+        <div id="Withdraw" class="tabcontent">
+            <label for="withdrawAmount">可提金额 (BTC):</label>
+            <input type="number" id="withdrawAmount" min="0" step="0.00000001">
+            <label for="exchangeFee">交易所手续费 (BTC):</label>
+            <input type="number" id="exchangeFee" value="0.000001" min="0" step="0.00000001">
+            <label class="output-label">闪电网络票据金额 (sats):</label>
+            <div class="output">
+                <input type="text" id="lnAmount" readonly>
+                <button class="copy" onclick="copyToClipboard('lnAmount', true)">复制</button>
+            </div>
+            <label class="output-label">实际到账 BTC:</label>
+            <div class="output">
+                <input type="text" id="actualBTC" readonly>
+                <button class="copy" onclick="copyToClipboard('actualBTC', false)">复制</button>
+            </div>
+            <button onclick="calculateWithdraw()">计算提现金额</button>
+        </div>
+    </div>
+
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tabs;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            tabs = document.getElementsByClassName("tab");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove("active");
+            }
+            for (i = 0; i < tabs.length; i++) {
+                tabs[i].classList.remove("active");
+            }
+            document.getElementById(tabName).classList.add("active");
+            evt.currentTarget.classList.add("active");
+        }
+
+        function calculateDeposit() {
+            var depositAmount = parseFloat(document.getElementById('depositAmount').value);
+            var lnFee = parseFloat(document.getElementById('lnFee').value);
+            if (isNaN(depositAmount) || isNaN(lnFee)) {
+                alert('请填写所有字段！');
+                return;
+            }
+            var exchangeDeposit = (depositAmount - lnFee) / 100000000;
+            document.getElementById('exchangeDeposit').value = exchangeDeposit.toFixed(8) + ' BTC';
+            document.getElementById('actualSats').value = (depositAmount - lnFee).toFixed(0) + ' sats';
+        }
+
+        function calculateWithdraw() {
+            var withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
+            var exchangeFee = parseFloat(document.getElementById('exchangeFee').value);
+            if (isNaN(withdrawAmount) || isNaN(exchangeFee)) {
+                alert('请填写所有字段！');
+                return;
+            }
+            var lnAmount = (withdrawAmount - exchangeFee) * 100000000;
+            document.getElementById('lnAmount').value = lnAmount.toFixed(0) + ' sats';
+            document.getElementById('actualBTC').value = (withdrawAmount - exchangeFee).toFixed(8) + ' BTC';
+        }
+
+        function copyToClipboard(elementId, includeUnit) {
+            var copyText = document.getElementById(elementId).value;
+            if (!includeUnit) {
+                copyText = copyText.replace(/ [a-zA-Z]+/, ''); // Remove the unit part
+            }
+            navigator.clipboard.writeText(copyText)
+                .then(() => alert("已复制: " + copyText))
+                .catch(err => alert('复制失败: ', err));
+        }
+    </script>
+</body>
+</html>
