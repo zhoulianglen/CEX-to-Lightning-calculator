@@ -2,114 +2,438 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>BTC 闪电网络交易所充值提款计算器</title>
     <link href="/favicon.png" rel="icon" type="image/x-icon" />
     <link href="/apple-touch-icon.png" rel="apple-touch-icon" sizes="180x180" />
     <link href="/favicon-32x32.png" rel="icon" sizes="32x32" type="image/png" />
     <link href="/favicon-16x16.png" rel="icon" sizes="16x16" type="image/png" />
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&display=swap');
+
+        :root {
+            --bg: #0e0e11;
+            --surface: #18181e;
+            --surface-2: #1f1f27;
+            --border: rgba(255,255,255,0.06);
+            --orange: #f7931a;
+            --orange-soft: rgba(247,147,26,0.12);
+            --orange-hover: #ffa033;
+            --text-1: #ececef;
+            --text-2: #8e8e99;
+            --text-3: #55555f;
+            --green: #34d399;
+            --red: #f87171;
+            --radius: 14px;
+            --radius-sm: 10px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        html {
+            background: var(--bg);
+            height: 100%;
+        }
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text-1);
+            min-height: 100%;
+            min-height: 100dvh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
-            height: 100vh;
-            margin: 0;
-            background: #f4f4f9;
+            justify-content: center;
+            padding: 24px 16px;
+            padding: 24px 16px env(safe-area-inset-bottom);
+            -webkit-font-smoothing: antialiased;
         }
+
         .container {
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 90%;
-            max-width: 600px;
+            width: 100%;
+            max-width: 420px;
         }
+
+        /* ── Header ── */
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .header .bolt {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            background: var(--orange);
+            margin-bottom: 14px;
+        }
+
+        .header .bolt svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            line-height: 1.3;
+            color: var(--text-1);
+        }
+
+        .header .sub {
+            font-size: 13px;
+            color: var(--text-3);
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* ── Tabs ── */
         .tabs {
             display: flex;
+            background: var(--surface);
+            border-radius: var(--radius-sm);
+            padding: 3px;
             margin-bottom: 20px;
+            border: 1px solid var(--border);
         }
+
         .tab {
             flex: 1;
             text-align: center;
             padding: 10px 0;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-2);
+            border-radius: 8px;
             cursor: pointer;
-            border-bottom: 3px solid transparent;
+            transition: all 0.2s ease;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
-        .active, .tab:hover {
-            border-bottom: 3px solid #f7931a; /* Bitcoin yellow */
-            /* color: #f7931a; */
-            font-weight: bold;
+
+        .tab.active {
+            background: var(--surface-2);
+            color: var(--text-1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
         }
+
+        .tab:not(.active):active {
+            background: rgba(255,255,255,0.03);
+        }
+
+        /* ── Card ── */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 20px;
+        }
+
         .tabcontent {
             display: none;
         }
+
         .tabcontent.active {
             display: block;
         }
-        label {
+
+        /* ── Form ── */
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
             display: block;
-            margin: 10px 0 5px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-2);
+            margin-bottom: 6px;
         }
-        input[type="number"], input[type="text"] {
-            width: calc(100% - 42px);
-            padding: 10px;
-            border: 1px solid #ccc;
+
+        .field label .req {
+            color: var(--red);
+            margin-left: 1px;
+        }
+
+        .field .input-wrap {
+            position: relative;
+        }
+
+        .field .input-wrap .suffix {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-family: 'DM Mono', monospace;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--text-3);
+            background: var(--surface-2);
+            padding: 2px 8px;
             border-radius: 4px;
+            pointer-events: none;
         }
-        button {
+
+        .field input {
             width: 100%;
-            padding: 10px 20px;
-            margin-top: 10px;
-            border: none;
-            background-color: #f7931a; /* Bitcoin yellow */
-            color: white;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
+            padding: 12px 70px 12px 14px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-1);
+            font-family: 'DM Mono', monospace;
+            font-size: 16px;
+            font-weight: 500;
+            outline: none;
+            transition: border-color 0.2s;
+            -webkit-appearance: none;
+            -moz-appearance: textfield;
         }
-        button:hover {
-            background-color: #e58300;
+
+        .field input::-webkit-inner-spin-button,
+        .field input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
         }
-        button.copy {
-            background-color: #808080;
-            padding: 8px 10px;
-            width: auto;
-            margin-left: 10px;
+
+        .field input:focus {
+            border-color: var(--orange);
         }
-        button.copy:hover {
-            background-color: #666666;
+
+        .field input.error {
+            border-color: var(--red);
         }
-        .output {
+
+        /* ── Separator ── */
+        .sep {
             display: flex;
             align-items: center;
-            margin-top: 10px;
+            gap: 10px;
+            margin: 18px 0;
+            color: var(--text-3);
+            font-size: 11px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
         }
-        .output input[type="text"] {
+
+        .sep::before, .sep::after {
+            content: '';
             flex: 1;
-            margin-right: 10px;
+            height: 1px;
+            background: var(--border);
         }
-        .output-label {
-            font-weight: bold;
-            margin-top: 10px;
-            display: block;
-            color: black; /* Black color for headings */
+
+        /* ── Result ── */
+        .result {
+            margin-bottom: 14px;
         }
-        h1 {
+
+        .result-label {
+            font-size: 12px;
+            color: var(--text-3);
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .result-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg);
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 4px 4px 4px 14px;
+        }
+
+        .result-row .value {
+            flex: 1;
+            display: flex;
+            align-items: baseline;
+            gap: 8px;
+            min-width: 0;
+            min-height: 24px;
+        }
+
+        .result-row .num {
+            font-family: 'DM Mono', monospace;
+            font-size: 18px;
+            font-weight: 500;
+            color: var(--orange);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .result-row .value.empty .num {
+            color: var(--text-3);
+        }
+
+        .result-row .unit-tag {
+            flex-shrink: 0;
+            font-family: 'DM Mono', monospace;
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--orange);
+            background: var(--orange-soft);
+            padding: 2px 7px;
+            border-radius: 4px;
+            letter-spacing: 0.03em;
+            white-space: nowrap;
+        }
+
+        .result-row .value.empty .unit-tag {
+            display: none;
+        }
+
+        .btn-copy {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 8px;
+            background: transparent;
+            color: var(--text-3);
+            cursor: pointer;
+            transition: all 0.15s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-copy:hover {
+            background: var(--orange-soft);
+            color: var(--orange);
+        }
+
+        .btn-copy:active {
+            transform: scale(0.9);
+        }
+
+        .btn-copy.copied {
+            color: var(--green);
+        }
+
+        .btn-copy svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+        }
+
+        /* ── Calculate Button ── */
+        .btn-calc {
+            width: 100%;
+            padding: 14px;
+            margin-top: 6px;
+            border: none;
+            border-radius: var(--radius-sm);
+            background: var(--orange);
+            color: #fff;
+            font-family: 'DM Sans', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.15s ease, transform 0.1s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-calc:hover {
+            background: var(--orange-hover);
+        }
+
+        .btn-calc:active {
+            transform: scale(0.98);
+        }
+
+        /* ── Toast ── */
+        .toast {
+            position: fixed;
+            bottom: 32px;
+            bottom: calc(32px + env(safe-area-inset-bottom));
+            left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: var(--surface-2);
+            border: 1px solid var(--border);
+            color: var(--text-1);
+            padding: 8px 18px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 500;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ── Footer ── */
+        .footer {
             text-align: center;
-            color: black; /* Black color for main title */
-            margin-bottom: 20px;
+            margin-top: 24px;
         }
+
+        .footer a {
+            font-size: 12px;
+            color: var(--text-3);
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            color: var(--text-2);
+        }
+
+        /* ── Mobile ── */
+        @media (max-width: 480px) {
+            body {
+                justify-content: flex-start;
+                padding-top: 20px;
+            }
+
+            .header {
+                margin-bottom: 24px;
+            }
+
+            .header h1 {
+                font-size: 20px;
+            }
+
+            .card {
+                padding: 16px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .result-row .num,
+            .field input {
+                font-size: 15px;
+            }
+        }
+
+        /* dark-only scrollbar */
+        ::-webkit-scrollbar { width: 0; }
     </style>
-    
+
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-PDPB3ZYZBH"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-
   gtag('config', 'G-PDPB3ZYZBH');
 </script>
 
@@ -118,97 +442,199 @@
 </head>
 <body>
     <div class="container">
-        <h1>BTC 闪电网络交易所充值提款计算</h1>
+        <div class="header">
+            <div class="bolt">
+                <svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+            </div>
+            <h1>闪电网络充提计算器</h1>
+            <div class="sub">CEX ⇄ Lightning Network</div>
+        </div>
+
         <div class="tabs">
             <div class="tab active" onclick="openTab(event, 'Deposit')">充值</div>
             <div class="tab" onclick="openTab(event, 'Withdraw')">提现</div>
         </div>
 
-        <div id="Deposit" class="tabcontent active">
-            <label for="depositAmount">充值金额 (sats):</label>
-            <input type="number" id="depositAmount" min="0">
-            <label for="lnFee">闪电网络处理费 (sats):</label>
-            <input type="number" id="lnFee" min="0">
-            <label class="output-label">交易所实际充值金额 (BTC):</label>
-            <div class="output">
-                <input type="text" id="exchangeDeposit" readonly>
-                <button class="copy" onclick="copyToClipboard('exchangeDeposit', false)">复制</button>
+        <div class="card">
+            <div id="Deposit" class="tabcontent active">
+                <div class="field">
+                    <label>充值金额<span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <input type="number" id="depositAmount" min="0" placeholder="0" inputmode="numeric">
+                        <span class="suffix">sats</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>闪电网络处理费<span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <input type="number" id="lnFee" min="0" placeholder="0" inputmode="numeric">
+                        <span class="suffix">sats</span>
+                    </div>
+                </div>
+
+                <div class="sep">结果</div>
+
+                <div class="result">
+                    <div class="result-label">交易所实际充值金额</div>
+                    <div class="result-row">
+                        <div class="value empty" id="exchangeDeposit">
+                            <span class="num">—</span>
+                            <span class="unit-tag">BTC</span>
+                        </div>
+                        <button class="btn-copy" onclick="copyValue('exchangeDeposit', false)" title="复制">
+                            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result">
+                    <div class="result-label">实际到账</div>
+                    <div class="result-row">
+                        <div class="value empty" id="actualSats">
+                            <span class="num">—</span>
+                            <span class="unit-tag">sats</span>
+                        </div>
+                        <button class="btn-copy" onclick="copyValue('actualSats', true)" title="复制">
+                            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calculateDeposit()">计算充值</button>
             </div>
-            <label class="output-label">实际到账 Sats:</label>
-            <div class="output">
-                <input type="text" id="actualSats" readonly>
-                <button class="copy" onclick="copyToClipboard('actualSats', true)">复制</button>
+
+            <div id="Withdraw" class="tabcontent">
+                <div class="field">
+                    <label>可提金额<span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <input type="number" id="withdrawAmount" min="0" step="0.00000001" placeholder="0.00000000" inputmode="decimal">
+                        <span class="suffix">BTC</span>
+                    </div>
+                </div>
+                <div class="field">
+                    <label>交易所手续费<span class="req">*</span></label>
+                    <div class="input-wrap">
+                        <input type="number" id="exchangeFee" value="0.000001" min="0" step="0.00000001" inputmode="decimal">
+                        <span class="suffix">BTC</span>
+                    </div>
+                </div>
+
+                <div class="sep">结果</div>
+
+                <div class="result">
+                    <div class="result-label">闪电网络票据金额</div>
+                    <div class="result-row">
+                        <div class="value empty" id="lnAmount">
+                            <span class="num">—</span>
+                            <span class="unit-tag">sats</span>
+                        </div>
+                        <button class="btn-copy" onclick="copyValue('lnAmount', true)" title="复制">
+                            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="result">
+                    <div class="result-label">实际到账</div>
+                    <div class="result-row">
+                        <div class="value empty" id="actualBTC">
+                            <span class="num">—</span>
+                            <span class="unit-tag">BTC</span>
+                        </div>
+                        <button class="btn-copy" onclick="copyValue('actualBTC', false)" title="复制">
+                            <svg viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <button class="btn-calc" onclick="calculateWithdraw()">计算提现</button>
             </div>
-            <button onclick="calculateDeposit()">计算充值金额</button>
         </div>
 
-        <div id="Withdraw" class="tabcontent">
-            <label for="withdrawAmount">可提金额 (BTC):</label>
-            <input type="number" id="withdrawAmount" min="0" step="0.00000001">
-            <label for="exchangeFee">交易所手续费 (BTC):</label>
-            <input type="number" id="exchangeFee" value="0.000001" min="0" step="0.00000001">
-            <label class="output-label">闪电网络票据金额 (sats):</label>
-            <div class="output">
-                <input type="text" id="lnAmount" readonly>
-                <button class="copy" onclick="copyToClipboard('lnAmount', true)">复制</button>
-            </div>
-            <label class="output-label">实际到账 BTC:</label>
-            <div class="output">
-                <input type="text" id="actualBTC" readonly>
-                <button class="copy" onclick="copyToClipboard('actualBTC', false)">复制</button>
-            </div>
-            <button onclick="calculateWithdraw()">计算提现金额</button>
+        <div class="footer">
+            <a href="https://github.com/zhoulianglen/CEX-to-Lightning-calculator" target="_blank">GitHub ↗</a>
         </div>
     </div>
 
+    <div class="toast" id="toast"></div>
+
     <script>
         function openTab(evt, tabName) {
-            var i, tabcontent, tabs;
-            tabcontent = document.getElementsByClassName("tabcontent");
-            tabs = document.getElementsByClassName("tab");
-            for (i = 0; i < tabcontent.length; i++) {
+            var tabcontent = document.getElementsByClassName("tabcontent");
+            var tabs = document.getElementsByClassName("tab");
+            for (var i = 0; i < tabcontent.length; i++) {
                 tabcontent[i].classList.remove("active");
             }
-            for (i = 0; i < tabs.length; i++) {
+            for (var i = 0; i < tabs.length; i++) {
                 tabs[i].classList.remove("active");
             }
             document.getElementById(tabName).classList.add("active");
             evt.currentTarget.classList.add("active");
         }
 
+        function setResult(id, numText) {
+            var el = document.getElementById(id);
+            el.querySelector('.num').textContent = numText;
+            el.classList.remove('empty');
+        }
+
         function calculateDeposit() {
             var depositAmount = parseFloat(document.getElementById('depositAmount').value);
             var lnFee = parseFloat(document.getElementById('lnFee').value);
             if (isNaN(depositAmount) || isNaN(lnFee)) {
-                alert('请填写所有字段！');
+                showToast('请填写所有字段');
                 return;
             }
             var exchangeDeposit = (depositAmount - lnFee) / 100000000;
-            document.getElementById('exchangeDeposit').value = exchangeDeposit.toFixed(8) + ' BTC';
-            document.getElementById('actualSats').value = (depositAmount - lnFee).toFixed(0) + ' sats';
+            setResult('exchangeDeposit', exchangeDeposit.toFixed(8));
+            setResult('actualSats', (depositAmount - lnFee).toFixed(0));
         }
 
         function calculateWithdraw() {
             var withdrawAmount = parseFloat(document.getElementById('withdrawAmount').value);
             var exchangeFee = parseFloat(document.getElementById('exchangeFee').value);
             if (isNaN(withdrawAmount) || isNaN(exchangeFee)) {
-                alert('请填写所有字段！');
+                showToast('请填写所有字段');
                 return;
             }
             var lnAmount = (withdrawAmount - exchangeFee) * 100000000;
-            document.getElementById('lnAmount').value = lnAmount.toFixed(0) + ' sats';
-            document.getElementById('actualBTC').value = (withdrawAmount - exchangeFee).toFixed(8) + ' BTC';
+            setResult('lnAmount', lnAmount.toFixed(0));
+            setResult('actualBTC', (withdrawAmount - exchangeFee).toFixed(8));
         }
 
-        function copyToClipboard(elementId, includeUnit) {
-            var copyText = document.getElementById(elementId).value;
-            if (!includeUnit) {
-                copyText = copyText.replace(/ [a-zA-Z]+/, ''); // Remove the unit part
-            }
-            navigator.clipboard.writeText(copyText)
-                .then(() => alert("已复制: " + copyText))
-                .catch(err => alert('复制失败: ', err));
+        function showToast(msg) {
+            var t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            clearTimeout(t._t);
+            t._t = setTimeout(function() { t.classList.remove('show'); }, 2000);
         }
+
+        function copyValue(id, includeUnit) {
+            var el = document.getElementById(id);
+            var num = el.querySelector('.num').textContent;
+            if (!num || num === '—') return;
+            var unit = el.querySelector('.unit-tag').textContent;
+            var text = includeUnit ? num + ' ' + unit : num;
+            navigator.clipboard.writeText(text).then(function() {
+                showToast('已复制 ' + text);
+                var btn = event.currentTarget;
+                btn.classList.add('copied');
+                setTimeout(function() { btn.classList.remove('copied'); }, 800);
+            }).catch(function() {
+                showToast('复制失败');
+            });
+        }
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                if (document.getElementById('Deposit').classList.contains('active')) {
+                    calculateDeposit();
+                } else {
+                    calculateWithdraw();
+                }
+            }
+        });
     </script>
 </body>
 </html>
