@@ -17,7 +17,7 @@
 
 ## 🚀 在线演示
 
-🌐 Demo: [https://cex2sats.imzl.com](https://cex2sats.imzl.com)
+🌐 Demo: [https://cex2sats.zhoulianglen.com](https://cex2sats.zhoulianglen.com)
 
 ---
 

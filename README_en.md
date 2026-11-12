@@ -17,7 +17,7 @@ Designed for common exchanges (Binance, OKX, Bitfinex, etc.) and personal Lightn
 
 ## 🚀 Demo
 
-🌐 Live Demo: [https://cex2sats.imzl.com](https://cex2sats.imzl.com)
+🌐 Live Demo: [https://cex2sats.zhoulianglen.com](https://cex2sats.zhoulianglen.com)
 
 ---
 
